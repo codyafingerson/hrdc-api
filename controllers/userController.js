@@ -110,4 +110,31 @@ const getAllUsers = asyncHandler(async (req, res) => {
     }
 });
 
+const updateUser = asyncHandler(async (req, res) => {
+    const {id} = req.params;
+    const {isAdmin, firstName, lastName, username } = req.body;
+
+    const user = await User.findById(id);
+
+    if (user) {
+        user.isAdmin = isAdmin || user.isAdmin;
+        user.firstName = firstName || user.firstName;
+        user.lastName = lastName || user.lastName;
+        user.username = username || user.username;
+
+        const updatedUser = await user.save();
+
+        res.status(200).json({
+            _id: updatedUser._id,
+            isAdmin: updatedUser.isAdmin,
+            firstName: updatedUser.firstName,
+            lastName: updatedUser.lastName,
+            username: updatedUser.username
+        });
+    } else {
+        res.status(404);
+        throw new Error('User not found');
+    }
+});
+
 module.exports = { createNewUser, loginUser, getUserDetails, deleteUser, getAllUsers };
